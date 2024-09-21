@@ -2,25 +2,12 @@ import streamlit as st
 import streamlit_authenticator as stauth
 from transformers import TrOCRProcessor, VisionEncoderDecoderModel
 from PIL import Image
-import yaml
-from yaml.loader import SafeLoader
+from propelauth import auth
 
-# Load configuration file
-with open('config.yaml') as file:
-    config = yaml.load(file, Loader=SafeLoader)
-
-# Create an authentication object
-authenticator = stauth.Authenticate(
-    config['credentials'],
-    config['cookie']['name'],
-    config['cookie']['key'],
-    config['cookie']['expiry_days'],
-    config['preauthorized']
-)
-
-# Add login widget
-name, authentication_status, username = authenticator.login('Login', 'main')
-
+user = auth.get_user()
+if user is None:
+    st.error('Unauthorized')
+    st.stop()
 if authentication_status:
     # User is logged in
     authenticator.logout('Logout', 'main')
