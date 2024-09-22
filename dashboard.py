@@ -1,38 +1,18 @@
-# import streamlit as st
-# from transformers import TrOCRProcessor, VisionEncoderDecoderModel
-# from PIL import Image
-# from properlauth import auth
-
-# user = auth.get_user()
-# if user is None:
-#     st.error('Unauthorized')
-#     st.stop()
-# if authentication_status:
-#     # User is logged in
-#     authenticator.logout('Logout', 'main')
-#     st.write(f'Welcome *{name}*')
-    
-#     st.title('Receipt OCR')
-
-#     processor = TrOCRProcessor.from_pretrained("microsoft/trocr-base-handwritten")
-#     model = VisionEncoderDecoderModel.from_pretrained("microsoft/trocr-base-handwritten")
-
-#     uploaded_file = st.file_uploader("Upload a receipt image", type=["jpg", "png", "jpeg"])
-#     if uploaded_file is not None:
-#         image = Image.open(uploaded_file).convert("RGB")
-#         pixel_values = processor(image, return_tensors="pt").pixel_values
-#         generated_ids = model.generate(pixel_values)
-#         generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
-#         st.write(generated_text)
-
-# elif authentication_status == False:
-#     st.error('Username/password is incorrect')
-# elif authentication_status == None:
-#     st.warning('Please enter your username and password')
-
 import streamlit as st
-
+import os
 from propelauth import auth
+import dotenv
+from pymongo import MongoClient
+from bson import ObjectId
+
+dotenv.load_dotenv()
+capital_one_api_key = os.getenv('CAPITAL_ONE_API_KEY')
+mongodb_uri = os.getenv('MONGODB_URI')
+
+# Connect to MongoDB
+client = MongoClient(mongodb_uri)
+db = client['your_database_name']  # Replace with your actual database name
+collection = db['your_collection_name']  # Replace with your actual collection name
 
 user = auth.get_user()
 if user is None:
@@ -43,3 +23,32 @@ with st.sidebar:
     st.link_button('Account', auth.get_account_url(), use_container_width=True)
 
 st.text("Logged in as " + user.email + " with user ID " + user.user_id)
+
+# Basic CRUD operations
+def create_document(data):
+    result = collection.insert_one(data)
+    return str(result.inserted_id)
+
+def read_document(document_id):
+    return collection.find_one({"_id": ObjectId(document_id)})
+
+def update_document(document_id, new_data):
+    result = collection.update_one({"_id": ObjectId(document_id)}, {"$set": new_data})
+    return result.modified_count
+
+def delete_document(document_id):
+    result = collection.delete_one({"_id": ObjectId(document_id)})
+    return result.deleted_count
+
+# Example usage
+if st.button("Create Sample Document"):
+    doc_id = create_document({"name": "Sample", "value": 42})
+    st.success(f"Created document with ID: {doc_id}")
+
+if st.button("Read Sample Document"):
+    doc_id = st.text_input("Enter document ID")
+    if doc_id:
+        doc = read_document(doc_id)
+        st.write(doc)
+
+# Add more UI elements for update and delete operations as needed
