@@ -22,3 +22,8 @@ Database: MongoDB (or your preferred database)
 Authentication: PropelAuth
 Receipt Scanning: Custom receipt OCR (Optical Character Recognition) or third-party service (e.g., Google Cloud Vision API)
 Visualization: Plotly for charts (or D3.js, Chart.js, etc.)
+
+Team:
+Roshan Bellary, rbellary@seas.upenn.edu
+Eshan Singhal, esinghal@seas.upenn.edu
+Audhav Durai, audhav@wharton.upenn.edu
