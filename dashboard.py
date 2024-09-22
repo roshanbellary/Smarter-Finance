@@ -5,13 +5,15 @@ from propelauth import auth
 import dotenv
 from pymongo import MongoClient
 from bson import ObjectId
-from database_functions import get_user, add_user, add_user_account
+from database_functions import get_user, add_user, add_user_account, create_full_user
 from data_structures import User
 from pages.financial_advice import finance_chat_bot  
 
 dotenv.load_dotenv()
 capital_one_api_key = os.getenv('CAPITAL_ONE_API_KEY')
 mongodb_uri = os.getenv('MONGODB_URI')
+data_file = os.getenv('DATA_FILE')
+print(data_file)
 client = MongoClient(mongodb_uri, tlsCAFile=certifi.where())
 db = client['smarter-finance']
 group_collection = db['Groups']
@@ -30,21 +32,18 @@ if 'chat_history' not in st.session_state:
     st.session_state.chat_history = []
 
 def create_user_account(user_name, user_email, user_balance, user_salary):
-    user_id = add_user(user_name)
+    user_obj = create_full_user(user_name, user_balance, user_salary, data_file)
     new_user = {
         "name": user_name,
         "email": user_email,
-        "user_id": user_id,
-        "account_id": None,
+        "user_id": user_obj.id,
+        "account_id": user_obj.account_id,
         "balance": user_balance,
         "salary": user_salary,
         "purchases": []
     }
-    new_user_obj = User(user_id, "", user_name, user_balance, user_salary, [])
-    account_id = add_user_account(new_user_obj)
-    new_user['account_id'] = account_id
     user_collection.insert_one(new_user)
-    return user_id
+    return user_obj.id
 
 if user_db is None:
     st.warning("Your account is not registered in our system.")
@@ -61,13 +60,14 @@ if user_db is None:
             st.success("Account created successfully!")
             user_db = user_collection.find_one({"user_id": new_user_id})
             st.session_state['user'] = user_db
-            st.rerun()
+            st.experimental_rerun()
         else:
             st.error("Failed to create account. Please try again.")
 else:
     st.session_state['user'] = user_db
     curr_data = get_user(st.session_state['user']['user_id'])
-    
+    print(curr_data.purchases)
+    # Welcome message
     st.header(f"Welcome, {curr_data.name}! 👋")
     
     col1, col2 = st.columns(2)
@@ -84,6 +84,12 @@ else:
         st.info("No purchases recorded yet.")
 
     st.subheader("Finance Chat")
+    
+    if st.session_state.chat_history:
+        for chat in st.session_state.chat_history:
+            st.write(f"**You:** {chat['question']}")
+            st.write(f"**Bot:** {chat['response']}")
+    
     user_question = st.text_input("Ask a question about your finances:")
     
     if st.button("Send"):
@@ -91,8 +97,4 @@ else:
             response = finance_chat_bot(curr_data.__dict__, user_question)
             st.session_state.chat_history.append({"question": user_question, "response": response})
             st.session_state.user_question = ""  
-
-    if st.session_state.chat_history:
-        for chat in st.session_state.chat_history:
-            st.write(f"**You:** {chat['question']}")
-            st.write(f"**Bot:** {chat['response']}")
+            st.experimental_rerun()  
