@@ -10,8 +10,8 @@ load_dotenv(dotenv_path)
 mongodb_uri = os.getenv('MONGODB_URI')
 client = MongoClient(mongodb_uri, tlsCAFile=certifi.where())
 db = client['smarter-finance']
-groups_collection = db["groups"]
-users_collection = db["users"]
+groups_collection = db["Groups"]
+users_collection = db["Users"]
 
 def display_user_groups():
     # Get the current user from the session state
@@ -34,7 +34,7 @@ def display_user_groups():
                 
                 # Display active members
                 st.markdown("**Active Members:**")
-                active_members = users_collection.find({"_id": {"$in": group['members']}})
+                active_members = users_collection.find({"user_id": {"$in": group['members']}})
                 for member in active_members:
                     st.markdown(f"- {member['name']} ({member['email']})")
                 

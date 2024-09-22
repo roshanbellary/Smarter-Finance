@@ -7,12 +7,12 @@ from pymongo import MongoClient
 from bson import ObjectId
 from database_functions import get_user, add_user, add_user_account, create_full_user
 from data_structures import User
-from pages.financial_advice import finance_chat_bot  
+from pages.financial_advice import finance_chat_bot
 
 dotenv.load_dotenv()
 capital_one_api_key = os.getenv('CAPITAL_ONE_API_KEY')
 mongodb_uri = os.getenv('MONGODB_URI')
-data_file = os.getenv('DATA_FILE')
+data_file = os.getenv('DATAFILE')
 print(data_file)
 client = MongoClient(mongodb_uri, tlsCAFile=certifi.where())
 db = client['smarter-finance']
@@ -60,7 +60,6 @@ if user_db is None:
             st.success("Account created successfully!")
             user_db = user_collection.find_one({"user_id": new_user_id})
             st.session_state['user'] = user_db
-            st.experimental_rerun()
         else:
             st.error("Failed to create account. Please try again.")
 else:
@@ -78,8 +77,41 @@ else:
     
     st.subheader("Purchase History")
     if curr_data.purchases:
-        for purchase in curr_data.purchases:
-            st.write(f"- {purchase['date']}: {purchase['description']} (${purchase['amount']:.2f})")
+        # Sort purchases by date (most recent first)
+        sorted_purchases = sorted(curr_data.purchases, key=lambda x: x.date, reverse=True)
+        
+        # Pagination
+        purchases_per_page = 5
+        total_pages = (len(sorted_purchases) - 1) // purchases_per_page + 1
+        
+        if 'current_page' not in st.session_state:
+            st.session_state.current_page = 1
+        
+        start_idx = (st.session_state.current_page - 1) * purchases_per_page
+        end_idx = start_idx + purchases_per_page
+        
+        for purchase in sorted_purchases[start_idx:end_idx]:
+            with st.container():
+                col1, col2 = st.columns([3, 1])
+                with col1:
+                    st.markdown(f"**{purchase.name}**")
+                    st.caption(purchase.date.strftime('%Y-%m-%d'))
+                with col2:
+                    st.markdown(f"<h3 style='text-align: right; color: #FF5733;'>${purchase.price:.2f}</h3>", unsafe_allow_html=True)
+                st.divider()
+        
+        # Pagination controls
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col1:
+            if st.button("Previous", disabled=st.session_state.current_page == 1):
+                st.session_state.current_page -= 1
+                st.rerun()
+        with col2:
+            st.write(f"Page {st.session_state.current_page} of {total_pages}")
+        with col3:
+            if st.button("Next", disabled=st.session_state.current_page == total_pages):
+                st.session_state.current_page += 1
+                st.rerun()
     else:
         st.info("No purchases recorded yet.")
 
@@ -97,4 +129,3 @@ else:
             response = finance_chat_bot(curr_data.__dict__, user_question)
             st.session_state.chat_history.append({"question": user_question, "response": response})
             st.session_state.user_question = ""  
-            st.experimental_rerun()  

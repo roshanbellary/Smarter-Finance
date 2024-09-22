@@ -6,8 +6,8 @@ import imutils
 import numpy as np
 import pytesseract
 from imutils.perspective import four_point_transform
-from cerebras_models import categorize_expenses
-import json 
+from pages.financial_advice import categorize_expenses
+import json
 
 def perform_ocr(img: np.ndarray):
     img_orig = cv2.imdecode(img, cv2.IMREAD_COLOR)
@@ -73,7 +73,7 @@ def perform_ocr(img: np.ndarray):
     return text
 
 
-def getText(image_path="receipt.jpg"):
+def getText(image_path):
     img_orig = cv2.imread(image_path)
     image = img_orig.copy()
     image = imutils.resize(image, width=500)
@@ -140,10 +140,11 @@ def getText(image_path="receipt.jpg"):
 
     return text
 
-def getJson(image_path="receipt.jpg"): 
+def getJson(image_path):
     text = getText(image_path)
     response = categorize_expenses(text)
-    content = str(response.choices[0].message.content)
+
+    content = str(response)
 
     print("\n\n\n\n\n")
     print(content)
@@ -151,11 +152,11 @@ def getJson(image_path="receipt.jpg"):
 
     json_data = json.loads(content)
 
-    # print(json_data)
     return json_data
 
-def main(): 
-    print(getJson(image_path="exampleHard.jpeg"))
+def main():
+    result = getJson(image_path="exampleHard.jpeg")
+    print(result)
 
 if __name__ == "__main__":
     main()
