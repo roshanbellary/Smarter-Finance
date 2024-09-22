@@ -89,7 +89,7 @@ def finance_chat_bot(user_info, question):
         "Incorporate relevant financial theories and concepts, such as the time value of money and compound interest, to substantiate your recommendations. "
         "Ensure your advice is actionable, precise, and tailored to their unique financial circumstances."
     )
-    # print(prompt)
+    print(prompt)
     response = client.chat.completions.create(
         model="llama3.1-8b",
         messages=[
