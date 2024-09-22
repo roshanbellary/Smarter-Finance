@@ -86,7 +86,7 @@ def get_user(user_id):
         purchase_resp = requests.get(f"{url}accounts/{user.account_id}/purchases?key={NESSIE_API_KEY}", headers=headers)
         for i in purchase_resp.json():
             user.purchases.append(Purchase(i["description"], i["amount"],
-                                           datetime.strftime(i["purchase_date"], "%Y-%m-%d"), None))
+                                           datetime.strptime(i["purchase_date"], "%Y-%m-%d"), None))
 
         return user
     except requests.exceptions.RequestException as e:
@@ -137,9 +137,9 @@ def clear_db():
         requests.delete(f"{url}accounts/{i['_id']}?key={NESSIE_API_KEY}", headers=headers)
 
 
-create_full_user("Eshan Singhal", 30000, 5000, DATAFILE)
-# user_id = "66ef77b99683f20dd518a6db"
-# user = get_user(user_id)
-# print(user.purchases)
+# create_full_user("Eshan Singhal", 30000, 5000, DATAFILE)
+user_id = "66efc0e89683f20dd518a9ca"
+user = get_user(user_id)
+print(user.purchases)
 # clear_db()
 # make_merchant()
