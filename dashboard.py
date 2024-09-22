@@ -10,13 +10,13 @@ from pymongo import MongoClient
 from bson import ObjectId
 from database_functions import get_user, add_user, add_user_account, create_full_user
 from data_structures import User
-from pages.financial_advice import finance_chat_bot
+from financial_advice import finance_chat_bot
 import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import numpy as np
-from pages.financial_advice import *
+from financial_advice import *
 
 dotenv.load_dotenv()
 capital_one_api_key = os.getenv('CAPITAL_ONE_API_KEY')
@@ -66,7 +66,8 @@ if user_db is None:
         submit_button = st.form_submit_button("Create Account")
 
     if submit_button:
-        new_user_id = create_user_account(user_name, user.email, user_balance, user_salary)
+        new_user_id = add_user_account(create_full_user(user_name, user_balance, user_salary, data_file))
+        user_collection.insert_one({"name": user_name, "email": user.email, "user_id": new_user_id, "account_id": new_user_id, "balance": user_balance, "salary": user_salary, "purchases": []})
         if new_user_id:
             st.success("Account created successfully!")
             user_db = user_collection.find_one({"user_id": new_user_id})
@@ -97,34 +98,45 @@ else:
 
     categories = ['Housing', 'Transportation', 'Food', 'Entertainment & Leisure', 'Healthcare',
                                    'Savings & Investments']
-    df = pd.DataFrame([], columns=['Date', 'Housing', 'Transportation', 'Food', 'Entertainment & Leisure', 'Healthcare',
-                                   'Savings & Investments'])
-    # for i in curr_data.purchases:
-    #     if i.date not in df['Date']:
-    #         df.loc[len(df)] = [i.date, 0, 0, 0, 0, 0, 0]
-    #     print(np.where(df['Date'] == i.date)[0][0])
-    #     df.at[np.where(df['Date'] == i.date)[0][0], i.category] += i.price
-    # Iterating through purchases to aggregate by week
+    df = pd.DataFrame([], columns=['Date'] + categories)
+
     for i in curr_data.purchases:
         # Convert purchase date to the start of the week (Monday)
         start_of_week = pd.to_datetime(i.date) - timedelta(days=pd.to_datetime(i.date).weekday())
 
         # Check if the week exists in the DataFrame
-        if start_of_week not in df['Date']:
+        if start_of_week not in df['Date'].values:
             # Add a new row for this week with zeros for each category
-            df.loc[len(df)] = [start_of_week, 0, 0, 0, 0, 0, 0]
+            new_row = pd.DataFrame({'Date': [start_of_week], **{cat: [0] for cat in categories}})
+            df = pd.concat([df, new_row], ignore_index=True)
 
-        # Find the index of the week and update the total cost for that week in the correct category
-        print(df['Date'])
-        print(start_of_week)
-        row_index = np.where(df['Date'] == start_of_week)[0][0]
-        df.at[row_index, i.category] += i.price
+        # Find the index of the week
+        row_index = df.index[df['Date'] == start_of_week].tolist()[0]
 
+        # Check if the category exists, if not, add to 'Other'
+        if i.category in categories:
+            df.at[row_index, i.category] += i.price
+        else:
+            print(f"Warning: Unknown category '{i.category}' for purchase {i.name}. Adding to 'Other'.")
+            if 'Other' not in df.columns:
+                df['Other'] = 0
+            df.at[row_index, 'Other'] += i.price
+
+    # Update categories list if 'Other' was added
+    if 'Other' in df.columns:
+        categories.append('Other')
+
+    # Sort the DataFrame by date
+    df = df.sort_values('Date')
+
+    # Create subplots
     fig = make_subplots(rows=2, cols=3,
-                        subplot_titles=(categories[0], categories[1], categories[2], categories[3], categories[4], categories[5]))
-    for i in range(len(categories)):
-        fig1 = px.bar(df, x='Date', y=categories[i], title=categories[i])
+                        subplot_titles=categories[:6])  # Only show first 6 categories in subplots
+
+    for i, category in enumerate(categories[:6]):  # Only plot first 6 categories
+        fig1 = px.bar(df, x='Date', y=category, title=category)
         fig.add_trace(fig1['data'][0], row=int(i / 3) + 1, col=i % 3 + 1)
+
     fig.update_layout(height=600, width=1000, title_text=" ")
 
     # Show the figure

@@ -6,7 +6,7 @@ import imutils
 import numpy as np
 import pytesseract
 from imutils.perspective import four_point_transform
-from pages.financial_advice import categorize_expenses
+from financial_advice import categorize_expenses
 import json
 
 def perform_ocr(img: np.ndarray):

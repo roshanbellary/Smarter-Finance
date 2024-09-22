@@ -3,7 +3,7 @@ from data_structures import User, Purchase
 import os
 from datetime import datetime
 from dotenv import load_dotenv
-from pages.financial_advice import *
+from financial_advice import *
 
 load_dotenv()
 
@@ -77,7 +77,7 @@ def add_user_purchase(user, date, price, description):
 def get_user(user_id):
     try:
         user_resp = requests.get(f"{url}customers/{user_id}?key={NESSIE_API_KEY}", headers=headers).json()
-        # acc_resp = requests.get(f"{url}customers/{user_id}/accounts?key={NESSIE_API_KEY}", headers=headers).json()
+        acc_resp = requests.get(f"{url}customers/{user_id}/accounts?key={NESSIE_API_KEY}", headers=headers).json()
         # if len(acc_resp) == 0:
         #     add_user_account(user_id)
         acc_resp = requests.get(f"{url}customers/{user_id}/accounts?key={NESSIE_API_KEY}", headers=headers).json()
