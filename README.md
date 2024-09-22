@@ -1,4 +1,4 @@
-# Receipt-To-Split
+Smarter Finance
 This project is a web application that allows users to authenticate via PropelAuth, view their categorized expenses for the past month, and scan receipts to split costs with their group based on items purchased.
 
 ## Features
