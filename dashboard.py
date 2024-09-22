@@ -85,18 +85,16 @@ else:
 
     st.subheader("Finance Chat")
     
-    # Display chat history
     if st.session_state.chat_history:
         for chat in st.session_state.chat_history:
             st.write(f"**You:** {chat['question']}")
             st.write(f"**Bot:** {chat['response']}")
     
-    # Input for user question
     user_question = st.text_input("Ask a question about your finances:")
     
     if st.button("Send"):
         if user_question:
             response = finance_chat_bot(curr_data.__dict__, user_question)
             st.session_state.chat_history.append({"question": user_question, "response": response})
-            st.session_state.user_question = ""  # Clear input after sending
-            st.experimental_rerun()  # Refresh to show new chat entry
+            st.session_state.user_question = ""  
+            st.experimental_rerun()  
