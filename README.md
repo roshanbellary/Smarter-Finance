@@ -32,6 +32,9 @@ LLM: Cerebras API
 
 ## Team
 Roshan Bellary, rbellary@seas.upenn.edu
+
 Eshan Singhal, esinghal@seas.upenn.edu
+
 Audhav Durai, audhav@wharton.upenn.edu
+
 Vedant Gaur, vedantg@wharton.upenn.edu
