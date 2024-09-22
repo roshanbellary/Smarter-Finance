@@ -1,7 +1,6 @@
 import os
 from cerebras.cloud.sdk import Cerebras
-
-CEREBRAS_API_KEY = ""
+CEREBRAS_API_KEY = os.getenv('CEREBRAS_API_KEY')
 client = Cerebras(
     api_key=os.environ.get(CEREBRAS_API_KEY)
 )
