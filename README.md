@@ -1,7 +1,7 @@
 # Receipt-To-Split
 This project is a web application that allows users to authenticate via PropelAuth, view their categorized expenses for the past month, and scan receipts to split costs with their group based on items purchased.
 
-Features
+## Features
 User Authentication:
 
 The app is integrated with PropelAuth for user authentication. Users can sign up, log in, and securely access their account information.
