@@ -62,6 +62,7 @@ if user_db is None:
             st.error("Failed to create account. Please try again.")
 else:
     st.session_state['user'] = user_db
+    print(st.session_state['user'])
     curr_data = get_user(st.session_state['user']['user_id'])
     
     # Welcome message
