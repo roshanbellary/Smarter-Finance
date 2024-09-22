@@ -61,7 +61,7 @@ if user_db is None:
             st.success("Account created successfully!")
             user_db = user_collection.find_one({"user_id": new_user_id})
             st.session_state['user'] = user_db
-            st.rerun()
+            st.experimental_rerun()
         else:
             st.error("Failed to create account. Please try again.")
 else:
@@ -84,15 +84,19 @@ else:
         st.info("No purchases recorded yet.")
 
     st.subheader("Finance Chat")
+    
+    # Display chat history
+    if st.session_state.chat_history:
+        for chat in st.session_state.chat_history:
+            st.write(f"**You:** {chat['question']}")
+            st.write(f"**Bot:** {chat['response']}")
+    
+    # Input for user question
     user_question = st.text_input("Ask a question about your finances:")
     
     if st.button("Send"):
         if user_question:
             response = finance_chat_bot(curr_data.__dict__, user_question)
             st.session_state.chat_history.append({"question": user_question, "response": response})
-            st.session_state.user_question = ""  
-
-    if st.session_state.chat_history:
-        for chat in st.session_state.chat_history:
-            st.write(f"**You:** {chat['question']}")
-            st.write(f"**Bot:** {chat['response']}")
+            st.session_state.user_question = ""  # Clear input after sending
+            st.experimental_rerun()  # Refresh to show new chat entry
