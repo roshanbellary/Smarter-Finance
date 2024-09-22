@@ -34,9 +34,19 @@ def categorize_expenses(expenses):
 
 
 def finance_chat_bot(user_info, question):
-    prompt = "You are a financial advising expert for the following user who's monthly financial information is in JSON format:\n" + \
-             str(user_info) + "\nAnswer the following question relating to their finances and give advice on how they " \
-                              "can improve their financial state: " + str(question)
+    prompt = (
+        "You are an expert financial advisor with extensive knowledge in personal finance, investment strategies, and economic principles. "
+        "The following user has provided their monthly financial information in JSON format:\n"
+        f"{str(user_info)}\n"
+        "Your task is to conduct a comprehensive analysis of their financial situation and respond to the following inquiry:\n"
+        f"{str(question)}\n"
+        "In your response, consider key financial metrics such as cash flow, debt-to-income ratio, and savings rate. "
+        "Evaluate their current asset allocation and suggest optimal diversification strategies. "
+        "Identify potential areas for cost reduction, including discretionary spending and fixed expenses, and provide detailed budgeting techniques. "
+        "Discuss the implications of their financial decisions on long-term wealth accumulation and risk management. "
+        "Incorporate relevant financial theories and concepts, such as the time value of money and compound interest, to substantiate your recommendations. "
+        "Ensure your advice is actionable, precise, and tailored to their unique financial circumstances."
+    )
     print(prompt)
     response = client.chat.completions.create(
         model="llama3.1-8b",
