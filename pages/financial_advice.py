@@ -1,12 +1,54 @@
 import os
 from cerebras.cloud.sdk import Cerebras
 from dotenv import load_dotenv
+import json
 
 load_dotenv()
 CEREBRAS_API_KEY = os.getenv('CEREBRAS_API_KEY')
 client = Cerebras(
     api_key=os.environ.get(CEREBRAS_API_KEY)
 )
+
+
+def categorize_user_expenses(user_obj):
+    expenses = []
+    for i in user_obj.purchases:
+        expenses.append([i.name])
+
+    categories = ['Housing', 'Transportation', 'Food', 'Entertainment & Leisure', 'Healthcare', 'Savings & Investments']
+    prompt = "Categorize the following expenses into " + str(categories) + " outputted in a JSON format with the item bought as the key and the category as a corresponding value: " + str(
+        expenses) + ". Output nothing else outside of the JSON list, no additional text or ``` characters at all, just the json, as your output will be parsed by an algorithm. Make sure all the items you include are actually real items, exclude things that don't seem like real items. Here is an example json schema: " + '''
+        [
+            {name: item_name1, cat: category_name1},
+            {name: item_name2, cat: category_name2},
+            {name: item_name3, cat: category_name3},
+            ...
+        ]
+        '''
+
+    print(prompt)
+    response = client.chat.completions.create(
+        model="llama3.1-8b",
+        messages=[
+            {"role": "user", "content": prompt}
+        ]
+    )
+
+    print(response.choices[0].message.content)
+    res = json.loads(response.choices[0].message.content)
+    print(res)
+    category_map = {}
+    for i in range(len(res)):
+        if not res[i]['name'] in category_map:
+            print(res[i])
+            category_map[res[i]['name']] = res[i]['cat']
+
+    for i in user_obj.purchases:
+        if i.name in category_map:
+            i.category = category_map[i.name]
+
+    return user_obj
+
 
 def categorize_expenses(expenses):
     categories = ['Housing', 'Transportation', 'Food', 'Entertainment & Leisure', 'Healthcare', 'Savings & Investments']
@@ -58,28 +100,28 @@ def finance_chat_bot(user_info, question):
     return response.choices[0].message.content 
 
 
-dummy_expenses = [
-    {"item": "Rent", "price": 1500},
-    {"item": "Bus Ticket", "price": 2.5},
-    {"item": "Groceries", "price": 200},
-    {"item": "Movie Ticket", "price": 15},
-    {"item": "Doctor Visit", "price": 100}
-]
-
-print(categorize_expenses(dummy_expenses))
-
-categorize_expenses(["item1", "item2", "item3"])
-
-user = {
-    "name": "John Doe",
-    "monthly salary": 5000,
-    "expenses": {
-        "housing": 1500,
-        "transportation": 500,
-        "food": 800,
-        "entertainment/leisure": 200,
-        "healthcare": 300,
-        "savings/investments": 1000
-    }
-}
-print(finance_chat_bot(user, "how can i lower my expenses?"))
+# dummy_expenses = [
+#     {"item": "Rent", "price": 1500},
+#     {"item": "Bus Ticket", "price": 2.5},
+#     {"item": "Groceries", "price": 200},
+#     {"item": "Movie Ticket", "price": 15},
+#     {"item": "Doctor Visit", "price": 100}
+# ]
+#
+# print(categorize_expenses(dummy_expenses))
+#
+# categorize_expenses(["item1", "item2", "item3"])
+#
+# user = {
+#     "name": "John Doe",
+#     "monthly salary": 5000,
+#     "expenses": {
+#         "housing": 1500,
+#         "transportation": 500,
+#         "food": 800,
+#         "entertainment/leisure": 200,
+#         "healthcare": 300,
+#         "savings/investments": 1000
+#     }
+# }
+# print(finance_chat_bot(user, "how can i lower my expenses?"))
