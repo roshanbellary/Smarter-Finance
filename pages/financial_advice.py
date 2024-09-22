@@ -10,7 +10,7 @@ client = Cerebras(
 )
 
 
-def categorize_expenses(user_obj):
+def categorize_user_expenses(user_obj):
     expenses = []
     for i in user_obj.purchases:
         expenses.append([i.name])
@@ -48,6 +48,31 @@ def categorize_expenses(user_obj):
             i.category = category_map[i.name]
 
     return user_obj
+
+
+def categorize_expenses(expenses):
+    categories = ['Housing', 'Transportation', 'Food', 'Entertainment & Leisure', 'Healthcare', 'Savings & Investments']
+    prompt = "Categorize the following expenses from this receipt into " + str(categories) + " outputted in a JSON format (not a list of JSONs) with the item bought as the key and the category and price as corresponding values: " + str(
+        expenses) + ". Also include the date of the purchase a field. Output nothing else outside of the JSON, no additional text, just the json, as your output will be parsed by an algorithm. Make sure all the items you include are actually real items, exclude things that don't seem like real items. Here is an example json schema: " + '''
+        {
+            "date": date, 
+            item_name1: {"category": category, "price": price},
+            item_name2: {"category": category, "price": price},
+            item_name3: {"category": category, "price": price},
+            ...
+        }
+        '''
+
+
+    # print(prompt)
+    response = client.chat.completions.create(
+        model="llama3.1-8b",
+        messages=[
+            {"role": "user", "content": prompt}
+        ]
+    )
+
+    return response.choices[0].message.content
 
 
 def finance_chat_bot(user_info, question):
