@@ -5,11 +5,13 @@ from propelauth import auth
 import dotenv
 from pymongo import MongoClient
 from bson import ObjectId
-from database_functions import get_user, add_user, add_user_account
+from database_functions import get_user, add_user, add_user_account, create_full_user
 from data_structures import User
 dotenv.load_dotenv()
 capital_one_api_key = os.getenv('CAPITAL_ONE_API_KEY')
 mongodb_uri = os.getenv('MONGODB_URI')
+data_file = os.getenv('DATA_FILE')
+print(data_file)
 client = MongoClient(mongodb_uri, tlsCAFile=certifi.where())
 # Connect to MongoDB
 db = client['smarter-finance']
@@ -26,21 +28,18 @@ with st.sidebar:
 user_db = user_collection.find_one({"email": user.email})
 
 def create_user_account(user_name, user_email, user_balance, user_salary):
-    user_id = add_user(user_name)
+    user_obj = create_full_user(user_name, user_balance, user_salary, data_file)
     new_user = {
         "name": user_name,
         "email": user_email,
-        "user_id": user_id,
-        "account_id": None,
+        "user_id": user_obj.id,
+        "account_id": user_obj.account_id,
         "balance": user_balance,
         "salary": user_salary,
         "purchases": []
     }
-    new_user_obj = User(user_id, "", user_name, user_balance, user_salary, [])
-    account_id = add_user_account(new_user_obj)
-    new_user['account_id'] = account_id
     user_collection.insert_one(new_user)
-    return user_id
+    return user_obj.id
 
 if user_db is None:
     st.warning("Your account is not registered in our system.")
@@ -64,7 +63,7 @@ else:
     st.session_state['user'] = user_db
     print(st.session_state['user'])
     curr_data = get_user(st.session_state['user']['user_id'])
-    
+    print(curr_data.purchases)
     # Welcome message
     st.header(f"Welcome, {curr_data.name}! 👋")
     
