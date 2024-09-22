@@ -7,7 +7,6 @@ import dotenv
 dotenv.load_dotenv()
 url = os.getenv("PROPEL_AUTH_URL")
 api_key = os.getenv("PROPEL_AUTH_API_KEY")
-print("api_key", api_key)
 class Auth:
     def __init__(self, auth_url, integration_api_key):
         self.auth = init_base_auth(auth_url, integration_api_key)
