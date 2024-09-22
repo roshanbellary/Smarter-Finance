@@ -138,14 +138,3 @@ def clear_db():
         requests.delete(f"{url}accounts/{i['_id']}?key={NESSIE_API_KEY}", headers=headers)
 
 
-user = create_full_user("Eshan Singhal", 30000, 5000, DATAFILE)
-# user_id = "66efc0e89683f20dd518a9ca"
-# user = get_user(user_id)
-# print(user.purchases)
-# clear_db()
-# make_merchant()
-print(user)
-user = categorize_expenses(user)
-for i in user.purchases:
-    print(i.category)
-
