@@ -1,7 +1,13 @@
 from propelauth_py import init_base_auth, UnauthorizedException
 from streamlit.web.server.websocket_headers import _get_websocket_headers
 import requests
+import os
+import dotenv
 
+dotenv.load_dotenv()
+url = os.getenv("PROPEL_AUTH_URL")
+api_key = os.getenv("PROPEL_AUTH_API_KEY")
+print("api_key", api_key)
 class Auth:
     def __init__(self, auth_url, integration_api_key):
         self.auth = init_base_auth(auth_url, integration_api_key)
@@ -58,3 +64,7 @@ def get_cookie(cookie_name):
             return split_cookie[1].strip()
 
     return None
+auth = Auth(
+    url,
+    api_key
+)

@@ -1,7 +1,6 @@
 import requests
-
-from APIKeys import *
-
+import os
+NESSIE_API_KEY = os.getenv('CAPITAL_ONE_API_KEY')
 url = "http://api.nessieisreal.com/"
 headers = {
     "Content-Type": "application/json",
