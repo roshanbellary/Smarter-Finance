@@ -124,8 +124,9 @@ def getText(image_path="receipt.jpg"):
 
     # apply a four-point perspective transform to the *original* image to
     # obtain a top-down bird's-eye view of the receipt
-    receipt = four_point_transform(img_orig, receiptCnt.reshape(4, 2) * ratio)
-    # cv2.imwrite('transformed_receipt.jpg', receipt)
+    receipt = img_orig# four_point_transform(img_orig, receiptCnt.reshape(4, 2) * ratio)
+
+    cv2.imwrite('transformed_receipt.jpg', receipt)
 
     # apply OCR to the receipt image by assuming column data, ensuring
     # the text is *concatenated across the row* (additionally, for your
@@ -136,6 +137,7 @@ def getText(image_path="receipt.jpg"):
         cv2.cvtColor(receipt, cv2.COLOR_BGR2RGB), config=options
     )
     # show the raw output of the OCR process
+
     return text
 
 def getJson(image_path="receipt.jpg"): 
@@ -143,10 +145,17 @@ def getJson(image_path="receipt.jpg"):
     response = categorize_expenses(text)
     content = str(response.choices[0].message.content)
 
-    # print("\n\n\n\n\n")
-    # print(content)
-    # print("\n\n\n\n\n")
+    print("\n\n\n\n\n")
+    print(content)
+    print("\n\n\n\n\n")
 
     json_data = json.loads(content)
 
     # print(json_data)
+    return json_data
+
+def main(): 
+    print(getJson(image_path="exampleHard.jpeg"))
+
+if __name__ == "__main__":
+    main()
