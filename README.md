@@ -19,8 +19,13 @@ Easily assign specific items from the receipt to different people and calculate 
 Frontend: React.js
 
 Backend: Node.js / Express
+
 Database: MongoDB
+
 Authentication: PropelAuth
+
 Receipt Scanning: Custom receipt OCR (Optical Character Recognition)
+
 Visualization: Plotly for charts (or D3.js, Chart.js, etc.)
+
 LLM: Cerebras API
