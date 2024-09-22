@@ -50,6 +50,7 @@ def display_user_groups():
                         st.success(f"You have left the group: {group['name']}")
                         st.rerun()
 
+
 def leave_group(group_id, user_id):
     try:
         result = groups_collection.update_one(

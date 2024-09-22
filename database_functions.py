@@ -8,6 +8,7 @@ load_dotenv()
 
 NESSIE_API_KEY = os.getenv('CAPITAL_ONE_API_KEY')
 MERCHANT_ID = os.getenv('MERCHANT_ID')
+DATAFILE = os.getenv('DATAFILE')
 url = "http://api.nessieisreal.com/"
 headers = {
     "Content-Type": "application/json",
@@ -75,9 +76,9 @@ def add_user_purchase(user, date, price, description):
 def get_user(user_id):
     try:
         user_resp = requests.get(f"{url}customers/{user_id}?key={NESSIE_API_KEY}", headers=headers).json()
-        acc_resp = requests.get(f"{url}customers/{user_id}/accounts?key={NESSIE_API_KEY}", headers=headers).json()
-        if len(acc_resp) == 0:
-            add_user_account(user_id)
+        # acc_resp = requests.get(f"{url}customers/{user_id}/accounts?key={NESSIE_API_KEY}", headers=headers).json()
+        # if len(acc_resp) == 0:
+        #     add_user_account(user_id)
         acc_resp = requests.get(f"{url}customers/{user_id}/accounts?key={NESSIE_API_KEY}", headers=headers).json()
         user = User(user_id, acc_resp[0]['_id'], f"{user_resp['first_name']} {user_resp['last_name']}",
                     acc_resp[0]['rewards'], acc_resp[0]['balance'], [])
@@ -136,7 +137,7 @@ def clear_db():
         requests.delete(f"{url}accounts/{i['_id']}?key={NESSIE_API_KEY}", headers=headers)
 
 
-create_full_user("Eshan Singhal", 30000, 5000, "C:\\Users\\eshan\\Desktop\\Coding Projects\\Receipt-To-Split\\Eshan Singhal Purchases.txt")
+create_full_user("Eshan Singhal", 30000, 5000, DATAFILE)
 # user_id = "66ef77b99683f20dd518a6db"
 # user = get_user(user_id)
 # print(user.purchases)
