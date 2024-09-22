@@ -30,7 +30,8 @@ Visualization: Plotly for charts (or D3.js, Chart.js, etc.)
 
 LLM: Cerebras API
 
-##Team
+## Team
 Roshan Bellary, rbellary@seas.upenn.edu
 Eshan Singhal, esinghal@seas.upenn.edu
 Audhav Durai, audhav@wharton.upenn.edu
+Vedant Gaur, vedantg@wharton.upenn.edu
