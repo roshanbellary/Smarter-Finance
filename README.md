@@ -16,9 +16,11 @@ Split the total receipt amount based on what each person purchased.
 Easily assign specific items from the receipt to different people and calculate individual totals.
 
 ## Tech Stack
-Frontend: React.js (or your frontend framework of choice)
-Backend: Node.js / Express (or your backend framework of choice)
-Database: MongoDB (or your preferred database)
+Frontend: React.js
+
+Backend: Node.js / Express
+Database: MongoDB
 Authentication: PropelAuth
-Receipt Scanning: Custom receipt OCR (Optical Character Recognition) or third-party service (e.g., Google Cloud Vision API)
+Receipt Scanning: Custom receipt OCR (Optical Character Recognition)
 Visualization: Plotly for charts (or D3.js, Chart.js, etc.)
+LLM: Cerebras API
