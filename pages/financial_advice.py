@@ -22,7 +22,7 @@ def categorize_expenses(expenses):
         '''
 
 
-    print(prompt)
+    # print(prompt)
     response = client.chat.completions.create(
         model="llama3.1-8b",
         messages=[
@@ -30,7 +30,7 @@ def categorize_expenses(expenses):
         ]
     )
 
-    return response
+    return response.choices[0].message.content
 
 
 def finance_chat_bot(user_info, question):
@@ -47,27 +47,39 @@ def finance_chat_bot(user_info, question):
         "Incorporate relevant financial theories and concepts, such as the time value of money and compound interest, to substantiate your recommendations. "
         "Ensure your advice is actionable, precise, and tailored to their unique financial circumstances."
     )
-    print(prompt)
+    # print(prompt)
     response = client.chat.completions.create(
         model="llama3.1-8b",
         messages=[
             {"role": "user", "content": prompt}
         ]
     )
+    
+    return response.choices[0].message.content 
 
 
-categorize_expenses([])
+dummy_expenses = [
+    {"item": "Rent", "price": 1500},
+    {"item": "Bus Ticket", "price": 2.5},
+    {"item": "Groceries", "price": 200},
+    {"item": "Movie Ticket", "price": 15},
+    {"item": "Doctor Visit", "price": 100}
+]
+
+print(categorize_expenses(dummy_expenses))
+
+categorize_expenses(["item1", "item2", "item3"])
 
 user = {
-    "name": "",
-    "monthly salary": "",
+    "name": "John Doe",
+    "monthly salary": 5000,
     "expenses": {
-        "housing": "",
-        "transportation": "",
-        "food": "",
-        "entertainment/leisure": "",
-        "healthcare": "",
-        "savings/investments": ""
+        "housing": 1500,
+        "transportation": 500,
+        "food": 800,
+        "entertainment/leisure": 200,
+        "healthcare": 300,
+        "savings/investments": 1000
     }
 }
-finance_chat_bot(user, "how can i lower my expenses?")
+print(finance_chat_bot(user, "how can i lower my expenses?"))
