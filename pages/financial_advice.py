@@ -51,14 +51,13 @@ def categorize_user_expenses(user_obj):
 
 
 def categorize_expenses(expenses):
-    categories = ['Housing', 'Transportation', 'Food', 'Entertainment & Leisure', 'Healthcare', 'Savings & Investments']
-    prompt = "Categorize the following expenses from this receipt into " + str(categories) + " outputted in a JSON format (not a list of JSONs) with the item bought as the key and the category and price as corresponding values: " + str(
-        expenses) + ". Also include the date of the purchase a field. Output nothing else outside of the JSON, no additional text, just the json, as your output will be parsed by an algorithm. Make sure all the items you include are actually real items, exclude things that don't seem like real items. Here is an example json schema: " + '''
+    prompt = "Place the following expenses from this receipt into the following JSON format (not a list of JSONs) with the item bought as the key and the price as a corresponding value: " + str(
+        expenses) + ". Also include the date of the purchase as a field. Output nothing else outside of the JSON, no additional text and no comments and no ``` characters as your output will be parsed by an algorithm. Make sure all the items you include are actually real items, exclude things that don't seem like real items. Here is an example json schema: " + '''
         {
             "date": date, 
-            item_name1: {"category": category, "price": price},
-            item_name2: {"category": category, "price": price},
-            item_name3: {"category": category, "price": price},
+            item_name1: {"price": price},
+            item_name2: {"price": price},
+            item_name3: {"price": price},
             ...
         }
         '''
