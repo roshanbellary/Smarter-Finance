@@ -73,9 +73,9 @@ def get_user(user_id):
     try:
         user_resp = requests.get(f"{url}customers/{user_id}?key={NESSIE_API_KEY}", headers=headers).json()
         acc_resp = requests.get(f"{url}customers/{user_id}/accounts?key={NESSIE_API_KEY}", headers=headers).json()
-        if (len(acc_resp) == 0):
-            add_user_account(user_id)
         acc_resp = requests.get(f"{url}customers/{user_id}/accounts?key={NESSIE_API_KEY}", headers=headers).json()
+        if (len(acc_resp) == 0):
+            return None
         user = User(user_id, acc_resp[0]['_id'], f"{user_resp['first_name']} {user_resp['last_name']}",
                     acc_resp[0]['rewards'], acc_resp[0]['balance'], [])
 
